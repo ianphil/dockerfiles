@@ -24,3 +24,7 @@ RUN apt-get update && apt-get install -y azure-cli
 # https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 # docker build -t myjenk .
 # docker run -itd -p 8080:8080 -p 50000:50000 -v /var/run/docker.sock:/var/run/docker.sock -v /home/tdr/tmp/jenkins/jenkins_home:/var/jenkins_home --name jenkins myjenk
+# docker service create -p 8081:8080 -p 50000:50000 \
+#  --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
+#  --mount type=bind,source=/home/tdr/jenkins/jenkins_home,destination=/var/jenkins_home \
+#  --name jenkins tripdubroot/jenkins:latest
