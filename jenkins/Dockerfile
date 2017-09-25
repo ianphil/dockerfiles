@@ -19,6 +19,7 @@ RUN echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheez
 RUN apt-key adv --keyserver packages.microsoft.com --recv-keys 417A0893
 RUN apt-get install apt-transport-https
 RUN apt-get update && apt-get install -y azure-cli
+RUN curl -sSL https://cli.openfaas.com | sh
 
 # Jenkins > openjdk > buld-debs > debian:stretch
 # https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
@@ -28,3 +29,4 @@ RUN apt-get update && apt-get install -y azure-cli
 #  --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
 #  --mount type=bind,source=/home/tdr/jenkins/jenkins_home,destination=/var/jenkins_home \
 #  --name jenkins tripdubroot/jenkins:latest
+# docker service update --image tripdubroot/jenkins:latest jenkins
