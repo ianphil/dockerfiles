@@ -49,6 +49,3 @@ WORKDIR $SPARK_HOME
 RUN echo "export SPARK_DIST_CLASSPATH=$(hadoop classpath)" > conf/spark-env.sh
 
 ENTRYPOINT [ "/bin/bash" ]
-
-# Help creating this file goes to:
-# https://github.com/gettyimages/docker-spark/blob/master/Dockerfile
