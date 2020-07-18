@@ -1,22 +1,12 @@
-FROM fedora:27
+FROM fedora:32
 WORKDIR /tmp
 
 #Installs
-RUN dnf install scala -y \
-    && ln -s /usr/bin/python3 /usr/bin/python
+RUN dnf install scala wget java-1.8.0-openjdk python37 procps hostname -y \
+  && ln -s /usr/bin/python3.7 /usr/bin/python
 
-# JAVA
-ARG JAVA_MAJOR_VERSION=8
-ARG JAVA_UPDATE_VERSION=161
-ARG JAVA_BUILD_NUMBER=12
-ARG JAVA_VER="${JAVA_MAJOR_VERSION}u${JAVA_UPDATE_VERSION}"
-ENV JAVA_HOME /usr/java/jre1.${JAVA_MAJOR_VERSION}.0_${JAVA_UPDATE_VERSION}
-RUN curl -sL --retry 3 --insecure \
-    --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-    "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VER}-b${JAVA_BUILD_NUMBER}/2f38c3b165be4555a1fa6e98c45e0808/jre-${JAVA_VER}-linux-x64.rpm" \
-    -o jre.rpm \
-    && dnf install -y jre.rpm \
-    && rm -rf jre.rpm
+# Java
+ENV JAVA_HOME /usr/lib/jvm/jre-1.8.0-openjdk
 
 # Hadoop
 ENV HADOOP_VERSION 2.7.5
@@ -32,15 +22,16 @@ RUN curl -sL --retry 3 \
  && chown -R root:root $HADOOP_HOME
 
 # SPARK
-ENV SPARK_VERSION 2.3.0
+ENV SPARK_VERSION 2.4.6
 ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
 ENV SPARK_HOME /usr/local/spark-${SPARK_VERSION}
 ENV CLASSPATH ${CLASSPATH}:${HADOOP_HOME}/lib/*
 ENV PYTHONPATH ${SPARK_HOME}/python/:${PYTHONPATH}
-ENV PATH $PATH:${SPARK_HOME}/bin
+ENV PATH $PATH:${SPARK_HOME}/bin:$SPARK_HOME/sbin
+ENV PYSPARK_PYTHON /usr/bin/python
 RUN curl -sL --retry 3 \
-  "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz" \
-  | gunzip \
+  "https://downloads.apache.org/spark/spark-2.4.6/spark-2.4.6-bin-without-hadoop.tgz" -o spark.tgz
+RUN gunzip -c spark.tgz\
   | tar x -C /usr/local \
  && mv /usr/local/$SPARK_PACKAGE $SPARK_HOME \
  && chown -R root:root $SPARK_HOME
